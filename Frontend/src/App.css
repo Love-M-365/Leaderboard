@@ -1,7 +1,5 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+
   text-align: center;
 }
 
@@ -39,4 +37,46 @@
 
 .read-the-docs {
   color: #888;
+}
+.glow-row {
+  animation: glow 1s ease-in-out infinite alternate;
+  box-shadow: 0 0 20px #00e1ff, 0 0 40px #00e1ff;
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 10px #00caff;
+  }
+  to {
+    box-shadow: 0 0 20px #00e1ff;
+  }
+}
+.blob {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255,255,255,0.4), transparent);
+  border-radius: 50%;
+  animation: float 15s infinite ease-in-out;
+  opacity: 0.5;
+}
+
+.blob1 {
+  top: 10%;
+  left: 5%;
+}
+
+.blob2 {
+  bottom: 10%;
+  right: 10%;
+}
+
+.blob3 {
+  top: 30%;
+  right: 25%;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-30px); }
 }
