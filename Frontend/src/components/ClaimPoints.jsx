@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import confetti from "canvas-confetti";
 
-export default function LeaderboardWithClaimPoints({ refresh }) {
+export default function LeaderboardWithClaimPoints({ refresh, onClaimRefresh }) {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -69,6 +69,11 @@ export default function LeaderboardWithClaimPoints({ refresh }) {
       setSelectedUser(updatedUser);
       setPopup(`${updatedUser.name} gained 10 points! 🎉`);
       confetti();
+      
+      if (onClaimRefresh) {
+      onClaimRefresh(); // 👈 will trigger fetch in parent
+    }
+
     } catch (error) {
       console.error("Error claiming points:", error);
     }
