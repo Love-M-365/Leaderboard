@@ -93,7 +93,7 @@ export default function LeaderboardWithClaimPoints() {
           disabled={currentPage === 1}
           onClick={() => setCurrentPage((prev) => prev - 1)}
         >
-          ⬅ Prev
+        &#x2190; Prev
         </button>
         <span className="font-semibold">
           Page {currentPage} of {totalPages}
@@ -103,7 +103,7 @@ export default function LeaderboardWithClaimPoints() {
           disabled={currentPage === totalPages}
           onClick={() => setCurrentPage((prev) => prev + 1)}
         >
-          Next ➡
+          Next &#x2192;
         </button>
       </div>
 

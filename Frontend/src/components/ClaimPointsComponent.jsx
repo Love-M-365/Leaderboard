@@ -5,6 +5,7 @@ import GoldMedal from "../assets/first.gif";
 import SilverMedal from "../assets/secondplace.gif";
 import BronzeMedal from "../assets/thirdplace.gif";
 import LeaderboardWithClaimPoints from "./ClaimPoints";
+import AddUserForm from "./AddUser";
 
 export default function ClaimPointsComponent() {
   const [users, setUsers] = useState([]);
@@ -84,7 +85,7 @@ export default function ClaimPointsComponent() {
           {/* Selector & Button */}
          
           {/* Leaderboard Title */}
-          <h2 className="text-3xl font-extrabold text-center">🏆 Leaderboard</h2>
+          <h2 className="text-4xl  text-center" style={{fontFamily:"Bungee"}}>🏆 Leaderboard</h2>
 
           {/* Top 3 Podium */}
          <div className="flex justify-center items-end gap-6 mt-6">
@@ -164,6 +165,8 @@ export default function ClaimPointsComponent() {
             </AnimatePresence>
           </div>
 <LeaderboardWithClaimPoints></LeaderboardWithClaimPoints>
+  <AddUserForm onUserAdded={(newUser) => console.log("Refresh leaderboard")} />
+    
           {/* History Log */}
           <div>
             <h2 className="text-3xl font-extrabold mb-4">🕓 Claim History</h2>
