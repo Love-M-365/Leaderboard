@@ -1,27 +1,30 @@
 import { useEffect, useState } from "react";
 import confetti from "canvas-confetti";
 
-const users = [
-  { name: "Alice", points: 100 },
-  { name: "Bob", points: 90 },
-  { name: "Charlie", points: 85 },
-  { name: "David", points: 80 },
-  { name: "Eve", points: 75 },
-  { name: "Frank", points: 70 },
-  { name: "Grace", points: 65 },
-  { name: "Heidi", points: 60 },
-  { name: "Ivan", points: 55 },
-  { name: "Judy", points: 50 },
-  { name: "Mallory", points: 45 },
-];
-
-export default function LeaderboardWithClaimPoints() {
+export default function LeaderboardWithClaimPoints({ refresh }) {
+  const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const [popup, setPopup] = useState(null);
 
+  // ✅ Fetch users from backend
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/users");
+      const data = await res.json();
+      setUsers(data);
+    } catch (err) {
+      console.error("Error fetching users", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers(); // Initial load + refresh when triggered from parent
+  }, [refresh]);
+
+  // ✅ Auto-hide popup
   useEffect(() => {
     if (popup) {
       const timeout = setTimeout(() => setPopup(null), 3000);
@@ -29,6 +32,7 @@ export default function LeaderboardWithClaimPoints() {
     }
   }, [popup]);
 
+  // ✅ Filtered + Paginated Users
   const filteredUsers = users
     .filter((u) => u.name.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => b.points - a.points);
@@ -39,16 +43,39 @@ export default function LeaderboardWithClaimPoints() {
     currentPage * itemsPerPage
   );
 
-  const handleClaimPoints = () => {
+  // ✅ Claim points logic
+  const handleClaimPoints = async () => {
     if (!selectedUser) return;
-    setPopup(`${selectedUser.name} gained 10 points! 🎉`);
-    confetti();
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/users/${selectedUser._id}/increase`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ pointsToAdd: 10 }),
+        }
+      );
+      const updatedUser = await res.json();
+
+      // Update users state
+      setUsers((prevUsers) =>
+        prevUsers.map((u) =>
+          u._id === updatedUser._id ? updatedUser : u
+        )
+      );
+
+      setSelectedUser(updatedUser);
+      setPopup(`${updatedUser.name} gained 10 points! 🎉`);
+      confetti();
+    } catch (error) {
+      console.error("Error claiming points:", error);
+    }
   };
 
- 
-
   return (
-    <div className="p-6 max-w-3xl mx-auto">
+    <div className="p-6 max-w-3xl mx-auto relative">
       <h2 className="text-3xl font-bold mb-4 text-center">Claim Points here</h2>
 
       <input
@@ -64,23 +91,27 @@ export default function LeaderboardWithClaimPoints() {
 
       <ul className="space-y-2 mb-6">
         {paginatedUsers.map((user, index) => {
-          const globalIndex = (currentPage - 1) * itemsPerPage + index;
-          
           return (
             <li
-              key={user.name}
+              key={user._id}
               className={`flex items-center justify-between p-4 rounded-lg shadow-md cursor-pointer transition-all ${
-                selectedUser?.name === user.name
+                selectedUser?._id === user._id
                   ? "bg-blue-100 border border-blue-400"
                   : "bg-white hover:bg-gray-100"
               }`}
               onClick={() => setSelectedUser(user)}
             >
               <div className="flex items-center space-x-3">
-            
+                <img
+                  src={`https://api.dicebear.com/7.x/${user.avatarStyle}/svg?seed=${user.avatarSeed}`}
+                  alt={user.name}
+                  className="w-10 h-10 rounded-full border-2"
+                />
                 <span className="font-medium">{user.name}</span>
               </div>
-              <span className="font-semibold text-gray-700">{user.points} pts</span>
+              <span className="font-semibold text-gray-700">
+                {user.points} pts
+              </span>
             </li>
           );
         })}
@@ -93,7 +124,7 @@ export default function LeaderboardWithClaimPoints() {
           disabled={currentPage === 1}
           onClick={() => setCurrentPage((prev) => prev - 1)}
         >
-        &#x2190; Prev
+          &#x2190; Prev
         </button>
         <span className="font-semibold">
           Page {currentPage} of {totalPages}
@@ -112,7 +143,9 @@ export default function LeaderboardWithClaimPoints() {
         <h3 className="text-xl font-bold mb-2">Claim Points</h3>
         <button
           className={`px-5 py-2 rounded-lg font-semibold text-white ${
-            selectedUser ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"
+            selectedUser
+              ? "bg-green-600 hover:bg-green-700"
+              : "bg-gray-400 cursor-not-allowed"
           }`}
           onClick={handleClaimPoints}
           disabled={!selectedUser}
@@ -121,9 +154,9 @@ export default function LeaderboardWithClaimPoints() {
         </button>
       </div>
 
-      {/* Popup */}
+      {/* Notification Popup */}
       {popup && (
-        <div className="fixed bottom-6 right-6 bg-blue-600 text-white px-4 py-2 rounded shadow-lg animate-bounce">
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-xl animate-bounce z-50">
           {popup}
         </div>
       )}

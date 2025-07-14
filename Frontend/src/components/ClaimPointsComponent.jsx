@@ -14,6 +14,11 @@ export default function ClaimPointsComponent() {
   const [history, setHistory] = useState([]);
   const [highlightedUserId, setHighlightedUserId] = useState(null);
   const [bgIndex, setBgIndex] = useState(0);
+  const [triggerRefresh, setTriggerRefresh] = useState(false);
+
+  const handleUserAdded = () => {
+    setTriggerRefresh((prev) => !prev); // toggle refresh state
+  };
 
   const backgrounds = [
     "bg-gradient-to-r from-purple-400 via-pink-500 to-red-500",
@@ -164,8 +169,8 @@ export default function ClaimPointsComponent() {
               ))}
             </AnimatePresence>
           </div>
-<LeaderboardWithClaimPoints></LeaderboardWithClaimPoints>
-  <AddUserForm onUserAdded={(newUser) => console.log("Refresh leaderboard")} />
+ <AddUserForm onUserAdded={handleUserAdded} />
+      <LeaderboardWithClaimPoints refresh={triggerRefresh} />
     
           {/* History Log */}
           <div>

@@ -5,6 +5,7 @@ export default function AddUserForm({ onUserAdded }) {
     name: "",
     points: "",
     avatarSeed: "",
+    avatarStyle: "adventurer", // Default style
   });
 
   const [randomSeeds] = useState(
@@ -25,8 +26,8 @@ export default function AddUserForm({ onUserAdded }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, points, avatarSeed } = formData;
-    if (!name || !points || !avatarSeed) return;
+    const { name, points, avatarSeed, avatarStyle } = formData;
+    if (!name || !points || !avatarSeed || !avatarStyle) return;
 
     try {
       setLoading(true);
@@ -39,13 +40,14 @@ export default function AddUserForm({ onUserAdded }) {
           name,
           points,
           avatarSeed,
+          avatarStyle,
         }),
       });
 
       const data = await res.json();
       if (res.ok) {
         setSuccessMsg("User added! 🎉");
-        setFormData({ name: "", points: "", avatarSeed: "" });
+        setFormData({ name: "", points: "", avatarSeed: "", avatarStyle });
         if (onUserAdded) onUserAdded(data);
       } else {
         alert("Failed: " + data.message);
@@ -81,6 +83,19 @@ export default function AddUserForm({ onUserAdded }) {
           className="w-full px-4 py-2 border rounded"
         />
 
+        {/* Dropdown for Avatar Style */}
+        <select
+          name="avatarStyle"
+          value={formData.avatarStyle}
+          onChange={handleChange}
+          className="w-full px-4 py-2 border rounded"
+        >
+          <option value="adventurer">Adventurer</option>
+          <option value="miniavs">MiniAvs</option>
+          <option value="fun-emoji">Fun Emoji</option>
+          <option value="bottts">Bottts</option>
+        </select>
+
         <div>
           <p className="mb-2 font-medium">Select an Avatar:</p>
           <div className="grid grid-cols-4 gap-3">
@@ -95,7 +110,7 @@ export default function AddUserForm({ onUserAdded }) {
                 }`}
               >
                 <img
-                  src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${seed}`}
+                  src={`https://api.dicebear.com/7.x/${formData.avatarStyle}/svg?seed=${seed}`}
                   alt="avatar"
                   className="w-14 h-14 rounded-full"
                 />
@@ -107,7 +122,7 @@ export default function AddUserForm({ onUserAdded }) {
             <div className="mt-4 flex flex-col items-center">
               <p className="text-sm text-gray-600 mb-1">Selected Avatar:</p>
               <img
-                src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${formData.avatarSeed}`}
+                src={`https://api.dicebear.com/7.x/${formData.avatarStyle}/svg?seed=${formData.avatarSeed}`}
                 alt="selected avatar"
                 className="w-16 h-16 rounded-full border-4 border-blue-500 shadow"
               />
