@@ -70,10 +70,10 @@ export default function ClaimPointsComponent() {
       <div className={`min-h-screen p-6 transition-all duration-700 ${backgrounds[bgIndex]}`}>
         <div className="bg-white/80 backdrop-blur-lg p-6 rounded-xl shadow-xl max-w-5xl mx-auto space-y-10">
          
-          <h2 className="text-4xl text-center" style={{ fontFamily: "Bungee" }}>
+          <h2 className="text-3xl text-center" style={{ fontFamily: "Bungee" }}>
             Leaderboard
           </h2>
-           <h2 className="text-6xl text-center" style={{ fontFamily: "Bungee" }}>
+           <h2 className="text-5xl text-center" style={{ fontFamily: "Bungee" }}>
             🏆
           </h2>
 
