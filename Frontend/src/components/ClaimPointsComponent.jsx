@@ -8,6 +8,7 @@ import LeaderboardWithClaimPoints from "./ClaimPoints";
 import AddUserForm from "./AddUser";
 
 export default function ClaimPointsComponent() {
+    
   const [users, setUsers] = useState([]);
   const [highlightedUserId, setHighlightedUserId] = useState(null);
   const [bgIndex, setBgIndex] = useState(0);
@@ -118,7 +119,7 @@ export default function ClaimPointsComponent() {
           {/* Remaining Leaderboard */}
           <div className="flex flex-col gap-3 mt-10">
             <AnimatePresence>
-              {users.slice(3).map((user, index) => (
+              {users.slice(3, 10).map((user, index) => (
                 <motion.div
                   key={user._id}
                   layout
@@ -153,31 +154,70 @@ export default function ClaimPointsComponent() {
           <AddUserForm onUserAdded={handleUserAdded} />
 
           {/* Claim History */}
-          <div>
-            <h2 className="text-3xl font-extrabold mb-4">🕓 Claim History</h2>
-            <div className="bg-white rounded-lg shadow overflow-auto max-h-64">
-              <table className="w-full table-auto">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="p-3">User</th>
-                    <th className="p-3">Points</th>
-                    <th className="p-3">Time</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {history.map((entry, index) => (
-                    <tr key={index} className="border-t hover:bg-gray-50 transition-all">
-                      <td className="p-3">{entry.userName}</td>
-                      <td className="p-3">{entry.points}</td>
-                      <td className="p-3 text-sm text-gray-600">
-                        {new Date(entry.timestamp).toLocaleString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+        {/* Claim History with Pagination */}
+<div>
+  <h2 className="text-3xl font-extrabold mb-4">🕓 Claim History</h2>
+
+  {/* Pagination state & logic */}
+  {(() => {
+    const entriesPerPage = 5;
+    const [currentPage, setCurrentPage] = useState(1);
+    const totalPages = Math.ceil(history.length / entriesPerPage);
+    const paginatedHistory = history.slice(
+      (currentPage - 1) * entriesPerPage,
+      currentPage * entriesPerPage
+    );
+
+    return (
+      <>
+        <div className="bg-white rounded-lg shadow overflow-auto max-h-75">
+          <table className="w-full table-auto">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-3">User</th>
+                <th className="p-3">Points</th>
+                <th className="p-3">Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedHistory.map((entry, index) => (
+                <tr key={index} className="border-t hover:bg-gray-50 transition-all">
+                  <td className="p-3">{entry.userName}</td>
+                  <td className="p-3">{entry.points}</td>
+                  <td className="p-3 text-sm text-gray-600">
+                    {new Date(entry.timestamp).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination Controls */}
+        <div className="flex justify-between items-center mt-4 px-2">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-40"
+          >
+            &#8592; Prev
+          </button>
+          <span className="font-semibold">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-4 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-40"
+          >
+            Next &#8594;
+          </button>
+        </div>
+      </>
+    );
+  })()}
+</div>
+
 
         </div>
       </div>
