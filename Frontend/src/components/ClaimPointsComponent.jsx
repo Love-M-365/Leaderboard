@@ -4,6 +4,7 @@ import confetti from "canvas-confetti";
 import GoldMedal from "../assets/first.gif";
 import SilverMedal from "../assets/secondplace.gif";
 import BronzeMedal from "../assets/thirdplace.gif";
+import LeaderboardWithClaimPoints from "./ClaimPoints";
 
 export default function ClaimPointsComponent() {
   const [users, setUsers] = useState([]);
@@ -68,7 +69,7 @@ export default function ClaimPointsComponent() {
 
     setTimeout(() => setHighlightedUserId(null), 4000);
   };
-
+   
   return (
     <div className="relative">
       {/* Floating Background Blobs */}
@@ -81,65 +82,57 @@ export default function ClaimPointsComponent() {
       <div className={`min-h-screen p-6 transition-all duration-700 ${backgrounds[bgIndex]}`}>
         <div className="bg-white/80 backdrop-blur-lg p-6 rounded-xl shadow-xl max-w-5xl mx-auto space-y-10">
           {/* Selector & Button */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <select
-              value={selectedUserId}
-              onChange={(e) => setSelectedUserId(e.target.value)}
-              className="p-3 rounded-md border w-full sm:w-64 bg-white shadow-md"
-            >
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.name}
-                </option>
-              ))}
-            </select>
-
-            <button
-              onClick={handleClaim}
-              className="bg-gradient-to-br from-blue-600 to-indigo-800 hover:scale-105 text-white px-6 py-3 rounded-lg font-bold shadow-lg transition-all"
-            >
-              🎯 Claim Points
-            </button>
-          </div>
-
+         
           {/* Leaderboard Title */}
           <h2 className="text-3xl font-extrabold text-center">🏆 Leaderboard</h2>
 
           {/* Top 3 Podium */}
-          <div className="flex justify-center items-end gap-6 mt-6">
-            {[1, 0, 2].map((podiumIndex, displayIndex) => {
-              const user = leaderboard[podiumIndex];
-              if (!user) return null;
-              const heights = ["h-48", "h-64", "h-56"];
-              const medals = ["🥈", "👑", "🥉"];
+         <div className="flex justify-center items-end gap-6 mt-6">
+  {[1, 0, 2].map((podiumIndex, displayIndex) => {
+    const user = leaderboard[podiumIndex];
+    if (!user) return null;
 
-              return (
-                <motion.div
-                  key={user.id}
-                  layout
-                  className={`flex flex-col items-center justify-end bg-white shadow-xl rounded-xl px-4 ${heights[displayIndex]} w-50 relative`}
-                >
-                  <div className="absolute -top-10 w-20 h-20 rounded-full border-4 border-yellow-300 bg-yellow-100 flex items-center justify-center">
-                    <img
-                      src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${user.id}`}
-                      alt={user.name}
-                      className="w-16 h-16 rounded-full"
-                    />
-                  </div>
-                  <div className="mt-12 text-center">
-                    <p className="font-bold text-lg">{user.name}</p>
-                    <p className="text-yellow-600 font-semibold">{user.totalPoints} pts</p>
-                  </div>
-               <img
-  src={[SilverMedal, GoldMedal, BronzeMedal][displayIndex]}
-  alt="Medal"
-  className="w-20 h-20 absolute bottom-20 left-1/2 -translate-x-1/2"
-/>
+    const heights = ["h-56", "h-64", "h-48"];
+    const borderColors = [
+      "border-4 border-gray-400",   // 🥈 Silver
+      "border-4 border-yellow-500", // 👑 Gold
+      "border-4 border-orange-500"  // 🥉 Bronze
+    ];
+    const medals = [SilverMedal, GoldMedal, BronzeMedal];
 
-                </motion.div>
-              );
-            })}
-          </div>
+    return (
+      <motion.div
+        key={user.id}
+        layout
+        className={`relative flex flex-col items-center justify-end bg-white shadow-xl rounded-xl px-4 ${heights[displayIndex]} w-40 sm:w-48 transition-all ${borderColors[displayIndex]}`}
+      >
+        {/* Avatar */}
+        <div className="absolute -top-10 w-20 h-20 rounded-full border-4 border-white bg-yellow-100 flex items-center justify-center shadow-md">
+          <img
+            src={`https://api.dicebear.com/7.x/miniavs/svg?seed=${user.id}`}
+            alt={user.name}
+            className="w-16 h-16 rounded-full"
+          />
+        </div>
+
+        {/* Medal Image */}
+        <img
+          src={medals[displayIndex]}
+          alt="Medal"
+          className="w-20 h-20 absolute bottom-18 left-1/2 -translate-x-1/2"
+        />
+
+        {/* User Info */}
+        <div className="mt-14 text-center">
+          <p className="font-bold text-base sm:text-lg">{user.name}</p>
+          <p className="text-blue-700 font-semibold text-sm sm:text-base">
+            {user.totalPoints} pts
+          </p>
+        </div>
+      </motion.div>
+    );
+  })}
+</div>
 
           {/* Remaining Leaderboard */}
           <div className="flex flex-col gap-3 mt-10">
@@ -170,7 +163,7 @@ export default function ClaimPointsComponent() {
               ))}
             </AnimatePresence>
           </div>
-
+<LeaderboardWithClaimPoints></LeaderboardWithClaimPoints>
           {/* History Log */}
           <div>
             <h2 className="text-3xl font-extrabold mb-4">🕓 Claim History</h2>
