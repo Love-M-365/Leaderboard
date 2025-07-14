@@ -2,6 +2,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
+const claimHistoryRoutes = require("./routes/claimHistory");
+require("dotenv").config();
+
 
 const userRoutes = require("./routes/userRoutes");
 
@@ -14,6 +17,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/users", userRoutes);
+app.use("/api/claim-history", claimHistoryRoutes);
 
 // DB + Server Init
 mongoose

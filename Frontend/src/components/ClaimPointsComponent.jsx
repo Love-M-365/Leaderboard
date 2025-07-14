@@ -31,32 +31,31 @@ export default function ClaimPointsComponent() {
     }
   };
 
+  const fetchHistory = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/claim-history");
+      const data = await res.json();
+      setHistory(data); // latest entries already sorted from backend
+    } catch (err) {
+      console.error("Error loading claim history:", err);
+    }
+  };
+
   useEffect(() => {
     fetchUsers();
+    fetchHistory();
   }, [triggerRefresh]);
 
   const handleUserAdded = () => {
     setTriggerRefresh((prev) => !prev);
   };
 
-  // ✅ Triggered by child component after claim
-  const handleClaimRefresh = (user) => {
-  setTriggerRefresh(prev => !prev); // 🔁 trigger useEffect to refetch users
-  setHighlightedUserId(user._id);   // 🌟 glow effect
-  setBgIndex(prev => (prev + 1) % backgrounds.length);
-
-  setHistory(prev => [
-    {
-      userName: user.name,
-      points: 10, // or dynamic if you send from child
-      timestamp: new Date().toISOString(),
-    },
-    ...prev,
-  ]);
-
-  setTimeout(() => setHighlightedUserId(null), 3000);
-};
-
+  const handleClaimRefresh = (user, pointsGained) => {
+    setTriggerRefresh((prev) => !prev);
+    setHighlightedUserId(user._id);
+    setBgIndex((prev) => (prev + 1) % backgrounds.length);
+    setTimeout(() => setHighlightedUserId(null), 3000);
+  };
 
   return (
     <div className="relative">
@@ -149,7 +148,7 @@ export default function ClaimPointsComponent() {
           {/* Claim + Add */}
           <LeaderboardWithClaimPoints
             refresh={triggerRefresh}
-             onClaimRefresh={handleClaimRefresh}
+            onClaimRefresh={handleClaimRefresh}
           />
           <AddUserForm onUserAdded={handleUserAdded} />
 
@@ -179,6 +178,7 @@ export default function ClaimPointsComponent() {
               </table>
             </div>
           </div>
+
         </div>
       </div>
     </div>

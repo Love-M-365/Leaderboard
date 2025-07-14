@@ -45,39 +45,55 @@ export default function LeaderboardWithClaimPoints({ refresh, onClaimRefresh }) 
 
   // ✅ Claim points logic
   const handleClaimPoints = async () => {
-    if (!selectedUser) return;
-    try {
-      const res = await fetch(
-        `http://localhost:5000/api/users/${selectedUser._id}/increase`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ pointsToAdd: 10 }),
-        }
-      );
-      const updatedUser = await res.json();
+  if (!selectedUser) return;
 
-      // Update users state
-      setUsers((prevUsers) =>
-        prevUsers.map((u) =>
-          u._id === updatedUser._id ? updatedUser : u
-        )
-      );
+  const randomPoints = Math.floor(Math.random() * 10) + 1;
 
-      setSelectedUser(updatedUser);
-      setPopup(`${updatedUser.name} gained 10 points! 🎉`);
-      confetti();
-      
-      if (onClaimRefresh) {
-      onClaimRefresh(); // 👈 will trigger fetch in parent
-    }
+  try {
+    const res = await fetch(
+      `http://localhost:5000/api/users/${selectedUser._id}/increase`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ pointsToAdd: randomPoints }),
+      }
+    );
 
-    } catch (error) {
-      console.error("Error claiming points:", error);
-    }
-  };
+    // ✅ THIS LINE IS IMPORTANT
+    const updatedUser = await res.json();
+
+    setUsers((prevUsers) =>
+      prevUsers.map((u) =>
+        u._id === updatedUser._id ? updatedUser : u
+      )
+    );
+
+    setSelectedUser(updatedUser);
+    setPopup(`${updatedUser.name} gained ${randomPoints} points! 🎉`);
+    confetti();
+
+   if (onClaimRefresh) {
+  onClaimRefresh(updatedUser, randomPoints);
+
+  // ✅ Save to claim history backend
+  await fetch("http://localhost:5000/api/claim-history", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      userName: updatedUser.name,
+      points: randomPoints,
+      timestamp: new Date().toISOString(),
+    }),
+  });
+}
+
+    
+  } catch (error) {
+    console.error("Error claiming points:", error);
+  }
+};
 
   return (
     <div className="p-6 max-w-3xl mx-auto relative">
