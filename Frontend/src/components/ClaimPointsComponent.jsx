@@ -23,7 +23,7 @@ export default function ClaimPointsComponent() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/users");
+      const res = await fetch("https://leaderboard-aaj8.onrender.com/api/users");
       const data = await res.json();
       const sorted = data.sort((a, b) => b.points - a.points);
       setUsers(sorted);
@@ -34,7 +34,7 @@ export default function ClaimPointsComponent() {
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/claim-history");
+      const res = await fetch("https://leaderboard-aaj8.onrender.com/api/claim-history");
       const data = await res.json();
       setHistory(data); // latest entries already sorted from backend
     } catch (err) {
@@ -69,8 +69,12 @@ export default function ClaimPointsComponent() {
 
       <div className={`min-h-screen p-6 transition-all duration-700 ${backgrounds[bgIndex]}`}>
         <div className="bg-white/80 backdrop-blur-lg p-6 rounded-xl shadow-xl max-w-5xl mx-auto space-y-10">
+         
           <h2 className="text-4xl text-center" style={{ fontFamily: "Bungee" }}>
-            🏆 Leaderboard
+            Leaderboard
+          </h2>
+           <h2 className="text-6xl text-center" style={{ fontFamily: "Bungee" }}>
+            🏆
           </h2>
 
           {/* Podium Top 3 */}

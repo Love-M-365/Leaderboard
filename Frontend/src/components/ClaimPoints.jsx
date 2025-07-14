@@ -12,7 +12,7 @@ export default function LeaderboardWithClaimPoints({ refresh, onClaimRefresh }) 
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/users");
+      const res = await fetch("https://leaderboard-aaj8.onrender.com/api/users");
       const data = await res.json();
       setUsers(data);
     } catch (err) {
@@ -49,7 +49,7 @@ export default function LeaderboardWithClaimPoints({ refresh, onClaimRefresh }) 
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/users/${selectedUser._id}/increase`,
+        `https://leaderboard-aaj8.onrender.com/api/users/${selectedUser._id}/increase`,
         {
           method: "PUT",
           headers: {
@@ -76,7 +76,7 @@ export default function LeaderboardWithClaimPoints({ refresh, onClaimRefresh }) 
       }
 
       // ✅ Save to history backend
-      await fetch("http://localhost:5000/api/claim-history", {
+      await fetch("https://leaderboard-aaj8.onrender.com/api/claim-history", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
